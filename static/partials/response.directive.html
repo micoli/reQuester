@@ -1,0 +1,37 @@
+status : {{response.statusCode}}
+<div class="row">
+	<div class="col-lg-12">
+		<ul class="nav nav-tabs">
+			<li role="presentation"
+				ng-class="{active:responseTab=='requestHeaders'}"><a
+				ng-click="changeTab('requestHeaders')">request Headers</a>
+			</li>
+			<li role="presentation"
+				ng-class="{active:responseTab=='responseHeaders'}"><a
+				ng-click="changeTab('responseHeaders')">response Headers</a>
+			</li>
+			<li role="presentation"
+				ng-class="{active:responseTab=='responseBody'}"><a
+				ng-click="changeTab('responseBody')">body</a>
+			</li>
+		</ul>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-lg-12">
+		<div ng-show="responseTab=='requestHeaders'" class="panel panel-default">
+			<ul>
+				<li ng-repeat="(k,v) in response.request.headers"><b>{{k}}</b> : {{v}}</li>
+			</ul>
+		</div>
+		<div ng-show="responseTab=='responseHeaders'" class="panel panel-default">
+			<ul>
+				<li ng-repeat="(k,v) in response.headers"><b>{{k}}</b> : {{v}}</li>
+			</ul>
+		</div>
+		<div ng-show="responseTab=='responseBody'" class="panel panel-default">
+			<pre>{{response.body|json}}</pre>
+		</div>
+	</div>
+</div>
