@@ -4,7 +4,7 @@ fs = require('fs');
 var finalhandler = require('finalhandler');
 var serveStatic = require('serve-static');
 
-var serve = serveStatic("./static/");
+var serve = serveStatic("./desk6/");
 
 server = http.createServer( function(req, res) {
 	if (req.method == 'POST') {
@@ -36,8 +36,28 @@ server = http.createServer( function(req, res) {
 			}
 		});
 	}else{
-		var done = finalhandler(req, res);
-		serve(req, res, done);
+		if(req.url.substr(0,4)=='/api'){
+			if(req.url.lastIndexOf('/api/user/status')==0){
+				res.end(JSON.stringify({
+					'status':true
+				}));
+			}else if(req.url.lastIndexOf('/api/user/initEnv')==0){
+				res.end(JSON.stringify({
+					'user':{
+						login:'me'
+					}
+				}));
+			}else if(true){
+				console.log(req.url);
+				res.end(JSON.stringify({
+					'status':true,
+					'success':true
+				}));
+			}
+		}else{
+			var done = finalhandler(req, res);
+			serve(req, res, done);
+		}
 	}
 });
 
