@@ -1,0 +1,32 @@
+@import 'Desktop-all_1.css';
+@import 'Desktop-all_custom.css';
+
+/*@import '../classic/theme-neptune/resources/theme-neptune-all.css';*/
+@import '../classic/theme-classic/resources/theme-classic-all.css';
+/* @import '../classic/theme-gray/resources/theme-gray-all.css'; */
+
+.pictureFrame {
+	width: 70px;
+	background-color: white;
+	margin: 2px;
+	height: 80px;
+	padding: 0px;
+	border: 1px solid #B4B4B4;
+}
+.pictureFrame i {
+	color: #b4b4b4;
+	font-size: 6em;
+	height: 80px;
+	text-align: center;
+	width: 65px;
+}
+.x-panel-body-default > .x-box-inner{
+	/*
+	background: #dfe8f6 none repeat scroll 0 0;
+	*/
+}
+
+.x-grid-group-hd-header-right{
+	position:absolute;
+	right:0;
+}
