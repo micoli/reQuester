@@ -1,11 +1,9 @@
 status : {{response.statusCode}}
 <md-content>
 	<md-tabs md-dynamic-height md-border-bottom>
-		<md-tab label="request Headers">
+		<md-tab label="body">
 			<md-content class="md-padding">
-				<ul>
-					<li ng-repeat="(k,v) in response.request.headers"><b>{{k}}</b> : {{v}}</li>
-				</ul>
+				<div ui-codemirror ng-model="response.body"></div>
 			</md-content>
 		</md-tab>
 		<md-tab label="response Headers">
@@ -15,9 +13,11 @@ status : {{response.statusCode}}
 				</ul>
 			</md-content>
 		</md-tab>
-		<md-tab label="body">
+		<md-tab label="request Headers">
 			<md-content class="md-padding">
-				<div ui-codemirror ng-model="response.body"></div>
+				<ul>
+					<li ng-repeat="(k,v) in response.request.headers"><b>{{k}}</b> : {{v}}</li>
+				</ul>
 			</md-content>
 		</md-tab>
 	</md-tabs>
