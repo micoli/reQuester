@@ -1,0 +1,138 @@
+<div class="demo-md-panel md-padding">
+	<md-card>
+		<md-card-content layout-gt-sm="row" layout-padding>
+			<md-input-container flex="20">
+				<label>Method</label>
+				<md-select ng-model="request.method">
+					<md-option value="GET">GET</md-option>
+					<md-option value="POST">POST</md-option>
+					<md-option value="PUT">PUT</md-option>
+					<md-option value="DELETE">DELETE</md-option>
+					<md-option value="PATCH">PATCH</md-option>
+				</md-select>
+			</md-input-container>
+			<md-input-container flex="70">
+				<label>Url</label>
+				<input ng-model="request.url">
+			</md-input-container>
+			<md-input-container flex="10">
+				<md-button class="md-primary" ng-click="sendRequest()">Send</md-button>
+			</md-input-container>
+		</md-card-content>
+	</md-card>
+
+	<md-card>
+		<md-card-content>
+			<md-tabs md-dynamic-height md-border-bottom>
+				<md-tab label="authorization">
+					<md-content class="md-padding">
+						authorization
+					</md-content>
+				</md-tab>
+				<md-tab label="headers">
+					<md-toolbar class="md-table-toolbar md-default">
+						<div class="md-toolbar-tools">
+							<div flex></div>
+							<md-button class="md-icon-button" ng-click="addHeader()">
+								<md-icon>add</md-icon>
+							</md-button>
+						</div>
+					</md-toolbar>
+					<md-table-container>
+						<table md-table md-row-select multiple ng-model="selectedHeaders">
+							<tbody md-body>
+								<tr md-row md-select="header" md-select-id="key" ng-repeat="header in request.headers" md-auto-select>
+									<td md-cell ng-click="editField($event,'key', header)">
+										{{header.key || 'key ...'}}
+									</td>
+									<td md-cell ng-click="editField($event,'value', header)">
+										{{header.value || 'value ...'}}
+									</td>
+									<td md-cell>
+										<md-button aria-label="remove" class="md-primary" ng-click="request.headers.splice($index,1)"><i class="fa fa-trash-o" aria-hidden="true"></i></md-button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</md-table-container>
+				</md-tab>
+				<md-tab label="body">
+					<md-tabs md-dynamic-height md-border-bottom md-selected="selectedBodyTypeIndex">
+						<md-tab label="Form">
+							<md-content class="md-padding">
+								<md-toolbar class="md-table-toolbar md-default">
+									<div class="md-toolbar-tools">
+										<div flex></div>
+										<md-button class="md-icon-button" ng-click="addFormDataParameter()" >
+											<md-icon>add</md-icon>
+										</md-button>
+									</div>
+								</md-toolbar>
+								<md-table-container>
+									<table md-table md-row-select multiple ng-model="selectedFormDataParameters">
+										<tbody md-body>
+											<tr md-row md-select="formDataParameter" md-select-id="key" ng-repeat="formDataParameter in request.formDataParameters" md-auto-select>
+												<td md-cell ng-click="editField($event,'key', formDataParameter)">
+													{{formDataParameter.key || 'key ...'}}
+												</td>
+												<td md-cell ng-click="editField($event,'value', formDataParameter)">
+													{{formDataParameter.value || 'value ...'}}
+												</td>
+												<td md-cell ng-click="editField($event,'type', formDataParameter)">
+													{{formDataParameter.type || 'value ...'}}
+												</td>
+												<td md-cell>
+													<md-button aria-label="remove" class="md-primary" ng-click="request.formDataParameters.splice($index,1)"><i class="fa fa-trash-o" aria-hidden="true"></i></md-button>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</md-table-container>
+							</md-content>
+						</md-tab>
+						<md-tab label="www-form-data">
+							<md-content class="md-padding">
+								<md-toolbar class="md-table-toolbar md-default">
+									<div class="md-toolbar-tools">
+										<div flex></div>
+										<md-button class="md-icon-button" ng-click="addWwwFormDataParameter()">
+											<md-icon>add</md-icon>
+										</md-button>
+									</div>
+								</md-toolbar>
+								<md-table-container>
+									<table md-table md-row-select multiple ng-model="selectedWwwFormDataParameters">
+										<tbody md-body>
+											<tr md-row md-select="wwwFormDataParameter" md-select-id="key" ng-repeat="wwwFormDataParameter in request.wwwFormDataParameters" md-auto-select>
+												<td md-cell ng-click="editField($event,'key', wwwFormDataParameter)">
+													{{wwwFormDataParameter.key || 'key ...'}}
+												</td>
+												<td md-cell ng-click="editField($event,'value', wwwFormDataParameter)">
+													{{wwwFormDataParameter.value || 'value ...'}}
+												</td>
+												<td md-cell>
+													<md-button aria-label="remove" class="md-primary" ng-click="request.wwwFormDataParameters.splice($index,1)"><i class="fa fa-trash-o" aria-hidden="true"></i></md-button>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</md-table-container>
+							</md-content>
+						</md-tab>
+					</md-tabs>
+				</md-tab>
+				<md-tab label="test">
+					<md-content class="md-padding">
+						tests
+					</md-content>
+				</md-tab>
+			</md-tabs>
+		</md-card-content>
+	</md-card>
+
+	<md-card>
+		<md-card-content>
+			<requester-response response="response"></requester-response>
+		</md-card-content>
+	</md-card>
+</div>

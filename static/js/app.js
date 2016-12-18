@@ -2,22 +2,24 @@
 	'use strict';
 
 	var dwnApp = angular.module('reQuesterApp', [
-		'ui.bootstrap',
-		'ui.router'
+		'ngMaterial',
+		'md.data.table',
+		'ui.router',
+		'ui.codemirror',
 	]);
 
 	dwnApp.config(['$stateProvider','$urlRouterProvider',function($stateProvider,$urlRouterProvider) {
-		$urlRouterProvider.otherwise("/list");
+		$urlRouterProvider.otherwise("/editor");
 
 		$stateProvider
 		.state('reQuester', {
 			url			: '/',
 			templateUrl	: '/partials/home.html'
 		})
-		.state('reQuester.list', {
-			url			: 'list',
-			templateUrl	: '/partials/list.html',
-			controller	: 'reQuesterListCtrl'
+		.state('reQuester.editor', {
+			url			: 'editor',
+			templateUrl	: '/partials/editor.html',
+			controller	: 'reQuesterEditorCtrl'
 		});
 	}]);
 })();

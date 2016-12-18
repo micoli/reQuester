@@ -20,15 +20,29 @@
 			}
 		};
 	})
-	.controller('reQuesterListCtrl',function($scope,$uibModal,$http,reQuester){
+	.controller('mainReQuesterCtrl',function($scope,$timeout, $mdSidenav, $log) {
+		$scope.close = function () {
+			// Component lookup should always be available since we are not using `ng-if`
+			$mdSidenav('left')
+			.close()
+			.then(function () {
+				$log.debug("close LEFT is done");
+			});
+		};
+	})
+	.controller('reQuesterEditorCtrl',function($scope,$http,reQuester,$mdEditDialog) {
 		$scope.request={};
+		$scope.selectedHeaders=[];
+		$scope.selectedFormDataParameters=[];
+		$scope.selectedWwwFormDataParameters=[];
+		$scope.selectedBodyTypeIndex=0;
 		$scope.request.method = 'GET';
 		$scope.request.url = 'https://jsonplaceholder.typicode.com/users';
 		$scope.request.tab = 'body';
 		$scope.request.headers = [];
 		$scope.request.parameterType='wwwFormDataParameter';
 		$scope.request.formDataParameters = [];
-		$scope.request.wwwformDataParameters = [];
+		$scope.request.wwwFormDataParameters = [];
 		$scope.response= {};
 		$scope.addHeader=function(){
 			$scope.request.headers.push({
@@ -46,7 +60,7 @@
 			});
 		}
 		$scope.addWwwFormDataParameter=function(){
-			$scope.request.wwwformDataParameters.push({
+			$scope.request.wwwFormDataParameters.push({
 				active	: true,
 				key		: '',
 				value	: '',
@@ -59,9 +73,41 @@
 			$scope.request.tab = newTab;
 		}
 
+		$scope.editField = function (event, fieldName, row) {
+			event.stopPropagation(); // in case autoselect is enabled
+
+			var editDialog = {
+				modelValue	: row[fieldName],
+				title		: 'Add a '+fieldName,
+				placeholder	: 'Add a '+fieldName,
+				targetEvent	: event,
+				validators	: {
+					'md-maxlength': 30
+				},
+				save		: function (input) {
+					if(input.$modelValue === '') {
+						input.$invalid = true;
+						return $q.reject();
+					}
+					row[fieldName] = input.$modelValue;
+				},
+			};
+
+			$mdEditDialog
+			.small(editDialog)
+			.then(function (ctrl) {
+				var input = ctrl.getInput();
+
+				input.$viewChangeListeners.push(function () {
+					input.$setValidity('test', input.$modelValue !== 'test');
+				});
+			});
+		};
+
 		$scope.addHeader();
 		$scope.addFormDataParameter();
 		$scope.addWwwFormDataParameter();
+
 		$scope.sendRequest = function(){
 			$http({
 				method	: 'POST',
@@ -78,7 +124,7 @@
 				}
 			}).then(function successCallback(response) {
 				$scope.response=response.data;
-				$scope.response.body = JSON.parse($scope.response.body);
+				//$scope.response.body = JSON.parse($scope.response.body);
 				console.log($scope.response);
 				$scope.response.responseHeaders=response.headers();
 			}, function errorCallback(response) {
