@@ -9,11 +9,15 @@ Ext.define('Ext.org.micoli.requester.tester', {
 		'Ext.grid.column.Action',
 		'Ext.org.micoli.lib.tree',
 		'Ext.grid.filters.Filters',
+		'Ext.org.micoli.requester.responseViewer'
 	],
 
 	initComponent: function(){
 		var that = this;
-		that.bodyCardId = Ext.id();
+		that.bodyCardId			= Ext.id();
+		that.methodsComboId		= Ext.id();
+		that.URLTextId			= Ext.id();
+		that.responseViewerId	= Ext.id();
 		that.reload = function(){
 		};
 		var methodsStore = Ext.create('Ext.data.Store', {
@@ -49,6 +53,7 @@ Ext.define('Ext.org.micoli.requester.tester', {
 			model	: 'KeyValue',
 			data	: []
 		});
+		ggggg = headersStore;
 
 		Ext.apply(this,{
 			layout		: 'border',
@@ -58,44 +63,47 @@ Ext.define('Ext.org.micoli.requester.tester', {
 				border		: false,
 				tbar		: [{
 					xtype		: 'combo',
+					id			: that.methodsComboId,
 					fieldLabel	: 'Method',
 					store		: methodsStore,
 					queryMode	: 'local',
 					displayField: 'value',
 					valueField	: 'value',
+					value		: 'GET'
 				},{
 					xtype		: 'textfield',
+					id			: that.URLTextId,
 					fieldLabel	: 'URL',
-					width		: 200
+					width		: 200,
+					value		: 'https://jsonplaceholder.typicode.com/users'
 				},{
 					xtype		: 'button',
 					text		: 'Send',
 					handler		: function(){
 						var generateRequest = function(){
 							var parameters = {
-								method	: $scope.request.method,
-								url		: $scope.request.url,
-								headers	: _.reduce(_.filter($scope.request.headers,function(v){
-									return v.active && v.key;
+								method	: Ext.getCmp(that.methodsComboId	).getValue(),
+								url		: Ext.getCmp(that.URLTextId			).getValue(),
+								headers	: _.reduce(_.filter(headersStore.getData().items,function(v){
+									return v.data.active && v.data.key;
 								}), function(acc, item) {
-									acc[item['key']] = item['value'];
+									acc[item.data.key] = item.data.value;
 									return acc;
 								}, {})
 							};
 							return parameters;
 						}
 
-						$http({
-							method	: 'POST',
-							url		: 'http://localhost:3000/',
-							data	: generateRequest()
-						})
-						.then(function successCallback(response) {
-							$scope.response=response.data;
-							console.log($scope.response);
-							$scope.response.responseHeaders=response.headers();
-						}, function errorCallback(response) {
-
+						Ext.Ajax.request({
+							url		: '',
+							jsonData: generateRequest(),
+							scope	: this,
+							success	: function(response) {
+								Ext.getCmp(that.responseViewerId).setResponse(JSON.parse(response.responseText))
+							},
+							failure: function() {
+								console.log('error');
+							}
 						});
 					}
 				}],
@@ -322,6 +330,10 @@ Ext.define('Ext.org.micoli.requester.tester', {
 					},{
 						title			: 'Authorization'
 					}]
+				},{
+					region	: 'center',
+					id		: that.responseViewerId,
+					xtype	: 'requester.responseViewer'
 				}]
 			}]
 		});
