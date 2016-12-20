@@ -6,6 +6,7 @@ Ext.define('Ext.org.micoli.requester.responseViewer', {
 		'Ext.grid.column.Action',
 		'Ext.org.micoli.lib.tree',
 		'Ext.grid.filters.Filters',
+		'Ext.org.micoli.lib.CodeMirror',
 	],
 
 	initComponent: function(){
@@ -15,7 +16,6 @@ Ext.define('Ext.org.micoli.requester.responseViewer', {
 			console.log(response);
 			requestHeaders.removeAll();
 			responseHeaders.removeAll();
-			response.body
 			_.forOwn(response.headers,function(v,k){
 				responseHeaders.add(new KeyValue({
 					key		: k,
@@ -28,7 +28,7 @@ Ext.define('Ext.org.micoli.requester.responseViewer', {
 					value	: v,
 				}));
 			});
-			Ext.getCmp(that.responseBodyId).setHtml(response.body)
+			Ext.getCmp(that.responseBodyId).setValue(response.body)
 		}
 		Ext.define('KeyValueResponse', {
 			extend: 'Ext.data.Model',
@@ -52,7 +52,8 @@ Ext.define('Ext.org.micoli.requester.responseViewer', {
 				xtype		: 'tabpanel',
 				border		: false,
 				items		: [{
-					xtype		: 'textarea',
+					title		: 'Body',
+					xtype		: 'CodeMirror',
 					id			: that.responseBodyId,
 				},{
 					title		: 'request Headers',

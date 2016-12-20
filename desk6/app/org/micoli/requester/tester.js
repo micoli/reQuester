@@ -9,15 +9,20 @@ Ext.define('Ext.org.micoli.requester.tester', {
 		'Ext.grid.column.Action',
 		'Ext.org.micoli.lib.tree',
 		'Ext.grid.filters.Filters',
-		'Ext.org.micoli.requester.responseViewer'
+		'Ext.org.micoli.requester.responseViewer',
+		'Ext.org.micoli.lib.CodeMirror'
 	],
 
 	initComponent: function(){
 		var that = this;
-		that.bodyCardId			= Ext.id();
-		that.methodsComboId		= Ext.id();
-		that.URLTextId			= Ext.id();
-		that.responseViewerId	= Ext.id();
+		that.bodyCardId					= Ext.id();
+		that.methodsComboId				= Ext.id();
+		that.URLTextId					= Ext.id();
+		that.requestBodyEditorId		= Ext.id();
+		that.requestTestEditorId		= Ext.id();
+		that.responseViewerId			= Ext.id();
+		that.headersGridId				= Ext.id();
+		that.radioGroupRequestBodyTypeId= Ext.id();
 		that.reload = function(){
 		};
 		var methodsStore = Ext.create('Ext.data.Store', {
@@ -53,7 +58,89 @@ Ext.define('Ext.org.micoli.requester.tester', {
 			model	: 'KeyValue',
 			data	: []
 		});
-		ggggg = headersStore;
+
+		that.mapLabelBodyToLayoutNumber = function(type){
+			switch (type){
+				case 'x-www-form':
+					return 0;
+				break;
+				case 'form':
+					return 1;
+				break;
+				case 'plain':
+					return 2;
+				break;
+			}
+		}
+
+		that.request={
+			"method" : "GET",
+			"url" : ""
+		}
+
+
+		var importRequest = function(obj){
+			that.request = obj;
+			setTimeout(function(){
+				Ext.getCmp(that.headersGridId).initialConfig.importData(that.request)
+				console.log(that.request.serialize.request.type);
+				Ext.getCmp(that.radioGroupRequestBodyTypeId).setValue({type:that.request.serialize.request.type});
+				var number = that.mapLabelBodyToLayoutNumber(that.request.serialize.request.type);
+				Ext.getCmp(that.bodyCardId).getLayout().setActiveItem(number);
+				var panel = Ext.getCmp(that.bodyCardId).getLayout().getActiveItem();
+				panel.initialConfig.importData(that.request);
+				Ext.getCmp(that.requestTestEditorId).setValue(that.request.serialize.testsSource);
+			},100)
+		}
+
+		importRequest({
+			"method" : "GET",
+			"url" : "https://jsonplaceholder.typicode.com/users",
+			"serialize" : {
+				"headers" : {
+					"data" : [ {
+						"active" : false,
+						"key" : "h1",
+						"value" : "12"
+					}, {
+						"active" : true,
+						"key" : "h2",
+						"value" : "11"
+					} ]
+				},
+				"request" : {
+					"type" : "form",
+					"data" : [ {
+						"active" : true,
+						"key" : "b1",
+						"value" : "1"
+					}, {
+						"active" : false,
+						"key" : "b2",
+						"value" : "2"
+					} ]
+				},
+				"testsSource":"var i"
+			},
+			"headers" : {
+				"h2" : "11"
+			},
+			"form" : []
+		});
+
+		var exportRequest = function(){
+			var parameters = {
+				method	: Ext.getCmp(that.methodsComboId	).getValue(),
+				url		: Ext.getCmp(that.URLTextId			).getValue(),
+				serialize:{}
+			};
+			Ext.getCmp(that.headersGridId).initialConfig.exportData(parameters);
+			var panel = Ext.getCmp(that.bodyCardId).getLayout().getActiveItem();
+			panel.initialConfig.exportData(parameters);
+			that.request.serialize.testsSource = Ext.getCmp(that.requestTestEditorId).getValue();
+			console.log(JSON.stringify(parameters));
+			return parameters;
+		}
 
 		Ext.apply(this,{
 			layout		: 'border',
@@ -61,42 +148,26 @@ Ext.define('Ext.org.micoli.requester.tester', {
 				region		: 'center',
 				layout		: 'border',
 				border		: false,
-				tbar		: [{
+				tbar		: ['Method : ',{
 					xtype		: 'combo',
 					id			: that.methodsComboId,
-					fieldLabel	: 'Method',
 					store		: methodsStore,
 					queryMode	: 'local',
 					displayField: 'value',
 					valueField	: 'value',
-					value		: 'GET'
-				},{
+					value		: that.request.method
+				},' URL : ',{
 					xtype		: 'textfield',
 					id			: that.URLTextId,
-					fieldLabel	: 'URL',
-					width		: 200,
-					value		: 'https://jsonplaceholder.typicode.com/users'
+					width		: 250,
+					value		: that.request.url
 				},{
 					xtype		: 'button',
 					text		: 'Send',
 					handler		: function(){
-						var generateRequest = function(){
-							var parameters = {
-								method	: Ext.getCmp(that.methodsComboId	).getValue(),
-								url		: Ext.getCmp(that.URLTextId			).getValue(),
-								headers	: _.reduce(_.filter(headersStore.getData().items,function(v){
-									return v.data.active && v.data.key;
-								}), function(acc, item) {
-									acc[item.data.key] = item.data.value;
-									return acc;
-								}, {})
-							};
-							return parameters;
-						}
-
 						Ext.Ajax.request({
 							url		: '',
-							jsonData: generateRequest(),
+							jsonData: exportRequest(),
 							scope	: this,
 							success	: function(response) {
 								Ext.getCmp(that.responseViewerId).setResponse(JSON.parse(response.responseText))
@@ -110,6 +181,7 @@ Ext.define('Ext.org.micoli.requester.tester', {
 				items		: [{
 					region		: 'north',
 					xtype		: 'tabpanel',
+					split		: true,
 					height		: 250,
 					border		: false,
 					items			: [{
@@ -119,22 +191,13 @@ Ext.define('Ext.org.micoli.requester.tester', {
 						id				: that.bodyCardId,
 						tbar			: ['Type:',{
 							xtype			: 'radiogroup',
+							id				: that.radioGroupRequestBodyTypeId,
 							defaultType		: 'radiofield',
 							layout			: 'hbox',
 							listeners		: {
 								change		: function ( radio , newValue , oldValue , eOpts ){
-									switch (newValue.type){
-										case 'x-www-form':
-											Ext.getCmp(that.bodyCardId).getLayout().setActiveItem(0);
-										break;
-										case 'form':
-											Ext.getCmp(that.bodyCardId).getLayout().setActiveItem(1);
-										break;
-										case 'plain':
-											Ext.getCmp(that.bodyCardId).getLayout().setActiveItem(2);
-										break;
-									}
-									console.log(newValue);
+									var number = that.mapLabelBodyToLayoutNumber(newValue.type);
+									Ext.getCmp(that.bodyCardId).getLayout().setActiveItem(number);
 								}
 							},
 							defaults	: {
@@ -174,6 +237,32 @@ Ext.define('Ext.org.micoli.requester.tester', {
 									}));
 								}
 							}],
+							importData	: function(parameters){
+								xFormParameterStore.removeAll();
+								Ext.each(parameters.serialize.request.data,function(v){
+									xFormParameterStore.add(new KeyValue(v));
+								});
+							},
+							exportData	: function(parameters){
+								parameters.form=[];
+								var data=[]
+								xFormParameterStore.each(function(v){
+									var key = v.get('key');
+									var value = v.get('value');
+									if(v.get('active')){
+										parameters.form[key]=value;
+									}
+									data.push({
+										active	: v.get('active'),
+										key		: v.get('key'),
+										value	: v.get('value'),
+									});
+								});
+								parameters.serialize.request={
+									type	: 'x-www-form',
+									data	: data
+								};
+							},
 							columns		: [{
 								text		: 'Active',
 								dataIndex	: 'active',
@@ -228,6 +317,33 @@ Ext.define('Ext.org.micoli.requester.tester', {
 									}));
 								}
 							}],
+							importData	: function(parameters){
+								formParameterStore.removeAll();
+								Ext.each(parameters.serialize.request.data,function(v){
+									formParameterStore.add(new KeyValue(v));
+								});
+							},
+							exportData	: function(parameters){
+								parameters.formData=[];
+								var data=[];
+								formParameterStore.each(function(v){
+									var key = v.get('key');
+									var value = v.get('value');
+									if(v.get('active')){
+										parameters.formData[key]=value;
+									}
+									data.push({
+										active	: v.get('active'),
+										key		: v.get('key'),
+										value	: v.get('value'),
+										type	: v.get('type')
+									});
+								});
+								parameters.serialize.request={
+									type	: 'form',
+									data	: data
+								}
+							},
 							columns		: [{
 								text		: 'Active',
 								dataIndex	: 'active',
@@ -270,12 +386,28 @@ Ext.define('Ext.org.micoli.requester.tester', {
 								}]
 							}]
 						},{
-							html : 'editor'
+							xtype		: 'CodeMirror',
+							id			: that.requestBodyEditorId,
+							importData	: function(parameters){
+								Ext.getCmp(that.requestBodyEditorId).setValue(parameters.serialize.request.data);
+							},
+							exportData	: function(parameters){
+								parameters.multipart= [{
+									'content-type': 'application/json',
+									body: Ext.getCmp(that.requestBodyEditorId).getValue()
+								}];
+								parameters.serialize.request={
+									type : 'plain',
+									data : parameters.multipart
+								};
+
+							},
 						}]
 					},{
 						title		: 'Headers',
 						xtype		: 'grid',
 						border		: false,
+						id			: that.headersGridId,
 						store		: headersStore,
 						plugins		: [Ext.create('Ext.grid.plugin.CellEditing', {
 							clicksToEdit: 1
@@ -291,6 +423,32 @@ Ext.define('Ext.org.micoli.requester.tester', {
 								}));
 							}
 						}],
+						importData	: function(parameters){
+							headersStore.removeAll();
+							Ext.each(parameters.serialize.headers.data,function(v){
+								console.log(v);
+								headersStore.add(new KeyValue(v));
+							});
+						},
+						exportData	: function(parameters){
+							var data = [];
+							parameters.headers={};
+							headersStore.each(function(v){
+								var key = v.get('key');
+								var value = v.get('value');
+								if(v.get('active')){
+									parameters.headers[key]=value;
+								}
+								data.push({
+									active	: v.get('active'),
+									key		: v.get('key'),
+									value	: v.get('value'),
+								});
+							});
+							parameters.serialize.headers={
+								data	: data
+							}
+						},
 						columns		: [{
 							text		: 'Active',
 							dataIndex	: 'active',
@@ -326,7 +484,10 @@ Ext.define('Ext.org.micoli.requester.tester', {
 							}]
 						}]
 					},{
-						title			: 'Tests'
+						title			: 'Tests',
+						xtype			: 'CodeMirror',
+						id				: that.requestTestEditorId,
+
 					},{
 						title			: 'Authorization'
 					}]

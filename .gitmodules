@@ -1,0 +1,4 @@
+[submodule "codemirror"]
+	path = desk6/vendor/.gitmodules/codemirror
+	url = https://github.com/codemirror/CodeMirror.gitA
+	branch = 5.21.0
