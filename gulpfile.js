@@ -3,7 +3,7 @@ var gulp = require('gulp'),
 	jshint = require('gulp-jshint');
 
 gulp.task('lint', function() {
-	gulp.src('server/**/*.js').pipe(jshint())
+	gulp.src('static/**/*.js').pipe(jshint())
 })
 
 gulp.task('develop', function() {

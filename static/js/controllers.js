@@ -35,9 +35,6 @@
 			},
 			templateUrl	:'partials/requester-request-editor.directive.html',
 			controller : function($scope,$http,reQuester,$mdEditDialog){
-				$scope.selectedHeaders=[];
-				$scope.selectedFormDataParameters=[];
-				$scope.selectedWwwFormDataParameters=[];
 				$scope.selectedBodyTypeIndex=0;
 				$scope.response= {};
 
@@ -50,15 +47,15 @@
 				}
 
 				$scope.addFormDataParameter=function(){
-					$scope.request.formDataParameters.push({
+					$scope.request.formData.push({
 						active	: true,
 						key		: '',
 						value	: '',
 						type	: 'text',
 					});
 				}
-				$scope.addWwwFormDataParameter=function(){
-					$scope.request.wwwFormDataParameters.push({
+				$scope.addFormParameter=function(){
+					$scope.request.form.push({
 						active	: true,
 						key		: '',
 						value	: '',
@@ -98,31 +95,32 @@
 
 				$scope.addHeader();
 				$scope.addFormDataParameter();
-				$scope.addWwwFormDataParameter();
+				$scope.addFormParameter();
 
 				var generateRequest = function(){
 					var parameters = {
 						method	: $scope.request.method,
 						url		: $scope.request.url,
-						headers	: _.reduce(_.filter($scope.request.headers,function(v){
-							return v.active && v.key;
-						}), function(acc, item) {
-							acc[item['key']] = item['value'];
-							return acc;
-						}, {})
 					};
+
+					parameters.headers = _.reduce(_.filter($scope.request.headers,function(v){
+						return v.active && v.key;
+					}), function(acc, item) {
+						acc[item['key']] = item['value'];
+						return acc;
+					}, {});
+
 					return parameters;
 				}
 
 				$scope.sendRequest = function(){
 					$http({
 						method	: 'POST',
-						url		: 'http://localhost:3000/',
+						url		: 'http://127.0.0.1:3000/',
 						data	: generateRequest()
 					})
 					.then(function successCallback(response) {
 						$scope.response=response.data;
-						console.log($scope.response);
 						$scope.response.responseHeaders=response.headers();
 					}, function errorCallback(response) {
 
@@ -141,16 +139,17 @@
 			});
 		};
 	})
-	.controller('reQuesterEditorCtrl',function($scope) {
+	.controller('reQuesterEditorCtrl',function($rootScope,$scope) {
 		$scope.request = {
 			method					: 'GET',
 			url						: 'https://jsonplaceholder.typicode.com/users',
 			headers					: [],
-			formDataParameters		: [],
-			wwwFormDataParameters	: [],
+			formData				: [],
+			form					: [],
 			testsSourceCode			: '',
 			bodySource				: ''
 		};
+		$rootScope.request = $scope.request;
 	})
 	.controller('reQuesterGlobalCtrl',function($scope,$http,minidns){
 	});

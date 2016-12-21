@@ -4,7 +4,7 @@ fs = require('fs');
 var finalhandler = require('finalhandler');
 var serveStatic = require('serve-static');
 
-var serve = serveStatic("./desk6/");
+var serve = serveStatic("./static/");
 
 server = http.createServer( function(req, res) {
 	if (req.method == 'POST') {
@@ -50,8 +50,8 @@ server = http.createServer( function(req, res) {
 			}else if(true){
 				console.log(req.url);
 				res.end(JSON.stringify({
-					'status':true,
-					'success':true
+					'status'	: true,
+					'success'	: true
 				}));
 			}
 		}else{

@@ -25,7 +25,7 @@
 			<md-tabs md-dynamic-height md-border-bottom>
 				<md-tab>
 					<md-tab-label>
-						body
+						Body
 					</md-tab-label>
 					<md-tab-body>
 						<md-tabs md-dynamic-height md-border-bottom md-selected="selectedBodyTypeIndex">
@@ -40,21 +40,24 @@
 										</div>
 									</md-toolbar>
 									<md-table-container>
-										<table md-table md-row-select multiple ng-model="selectedFormDataParameters">
+										<table md-table>
 											<tbody md-body>
-												<tr md-row md-select="formDataParameter" md-select-id="key" ng-repeat="formDataParameter in request.formDataParameters" md-auto-select>
-													<td md-cell ng-click="editField($event,'key', formDataParameter)">
-														{{formDataParameter.key || 'key ...'}}
+												<tr md-row md-select="parameter" md-select-id="key" ng-repeat="parameter in request.formData" md-auto-select>
+													<td md-cell>
+														<md-checkbox ng-model="parameter.active" aria-label="active"></md-checkbox>
 													</td>
-													<td md-cell ng-click="editField($event,'value', formDataParameter)">
-														{{formDataParameter.value || 'value ...'}}
+													<td md-cell ng-click="editField($event,'key', parameter)">
+														{{parameter.key || 'key ...'}}
+													</td>
+													<td md-cell ng-click="editField($event,'value', parameter)">
+														{{parameter.value || 'value ...'}}
 
 													</td>
-													<td md-cell ng-click="editField($event,'type', formDataParameter)">
-														{{formDataParameter.type || 'value ...'}}
+													<td md-cell ng-click="editField($event,'type', parameter)">
+														{{parameter.type || 'value ...'}}
 													</td>
 													<td md-cell>
-														<md-button aria-label="remove" class="md-primary" ng-click="request.formDataParameters.splice($index,1)"><i class="fa fa-trash-o" aria-hidden="true"></i></md-button>
+														<md-button aria-label="remove" class="md-primary" ng-click="request.formData.splice($index,1)"><i class="fa fa-trash-o" aria-hidden="true"></i></md-button>
 													</td>
 												</tr>
 											</tbody>
@@ -67,23 +70,26 @@
 									<md-toolbar class="md-table-toolbar md-default">
 										<div class="md-toolbar-tools">
 											<div flex></div>
-											<md-button class="md-icon-button" ng-click="addWwwFormDataParameter()">
+											<md-button class="md-icon-button" ng-click="addFormParameter()">
 												<md-icon>add</md-icon>
 											</md-button>
 										</div>
 									</md-toolbar>
 									<md-table-container>
-										<table md-table md-row-select multiple ng-model="selectedWwwFormDataParameters">
+										<table md-table>
 											<tbody md-body>
-												<tr md-row md-select="wwwFormDataParameter" md-select-id="key" ng-repeat="wwwFormDataParameter in request.wwwFormDataParameters" md-auto-select>
-													<td md-cell ng-click="editField($event,'key', wwwFormDataParameter)">
-														{{wwwFormDataParameter.key || 'key ...'}}
+												<tr md-row md-select="parameter" md-select-id="key" ng-repeat="parameter in request.form" md-auto-select>
+													<td md-cell>
+														<md-checkbox ng-model="parameter.active" aria-label="active"></md-checkbox>
 													</td>
-													<td md-cell ng-click="editField($event,'value', wwwFormDataParameter)">
-														{{wwwFormDataParameter.value || 'value ...'}}
+													<td md-cell ng-click="editField($event,'key', parameter)">
+														{{parameter.key || 'key ...'}}
+													</td>
+													<td md-cell ng-click="editField($event,'value', parameter)">
+														{{parameter.value || 'value ...'}}
 													</td>
 													<td md-cell>
-														<md-button aria-label="remove" class="md-primary" ng-click="request.wwwFormDataParameters.splice($index,1)"><i class="fa fa-trash-o" aria-hidden="true"></i></md-button>
+														<md-button aria-label="remove" class="md-primary" ng-click="request.form.splice($index,1)"><i class="fa fa-trash-o" aria-hidden="true"></i></md-button>
 													</td>
 												</tr>
 											</tbody>
@@ -91,7 +97,7 @@
 									</md-table-container>
 								</md-content>
 							</md-tab>
-							<md-tab label="plain body">
+							<md-tab label="Plain body">
 								<md-content class="md-padding">
 									<div ui-codemirror ng-model="request.bodySource"></div>
 								</md-content>
@@ -101,7 +107,7 @@
 				</md-tab>
 				<md-tab>
 					<md-tab-label>
-						headers
+						Headers
 					</md-tab-label>
 					<md-tab-body>
 						<md-toolbar class="md-table-toolbar md-default">
@@ -113,9 +119,12 @@
 							</div>
 						</md-toolbar>
 						<md-table-container>
-							<table md-table md-row-select multiple ng-model="selectedHeaders">
+							<table md-table>
 								<tbody md-body>
 									<tr md-row md-select="header" md-select-id="key" ng-repeat="header in request.headers" md-auto-select>
+										<td md-cell>
+											<md-checkbox ng-model="header.active" aria-label="active"></md-checkbox>
+										</td>
 										<td md-cell ng-click="editField($event,'key', header)">
 											{{header.key || 'key ...'}}
 										</td>

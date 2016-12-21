@@ -1,19 +1,19 @@
 status : {{response.statusCode}}
 <md-content>
 	<md-tabs md-dynamic-height md-border-bottom>
-		<md-tab label="body">
+		<md-tab label="Body">
 			<md-content class="md-padding">
 				<div ui-codemirror ng-model="response.body"></div>
 			</md-content>
 		</md-tab>
-		<md-tab label="response Headers">
+		<md-tab label="Response Headers">
 			<md-content class="md-padding">
 				<ul>
 					<li ng-repeat="(k,v) in response.headers"><b>{{k}}</b> : {{v}}</li>
 				</ul>
 			</md-content>
 		</md-tab>
-		<md-tab label="request Headers">
+		<md-tab label="Request Headers">
 			<md-content class="md-padding">
 				<ul>
 					<li ng-repeat="(k,v) in response.request.headers"><b>{{k}}</b> : {{v}}</li>
