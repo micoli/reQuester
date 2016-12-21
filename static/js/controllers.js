@@ -92,39 +92,39 @@
 					});
 				};
 
+				$scope.bodySourceEditorOptions= {
+					lineWrapping	: true,
+					lineNumbers		: true,
+					mode			: 'javascript',
+				};
+
 				$scope.addHeader();
 				$scope.addFormDataParameter();
 				$scope.addFormParameter();
 
-				var generateRequest = function(){
-					var parameters = {
-						method	: $scope.request.method,
-						url		: $scope.request.url,
-					};
-
-					parameters.headers = _.reduce(_.filter($scope.request.headers,function(v){
+				var serializeKeyValue = function(list){
+					return = _.reduce(_.filter(list,function(v){
 						return v.active && v.key;
 					}), function(acc, item) {
 						acc[item['key']] = item['value'];
 						return acc;
 					}, {});
 
+				}
+				var generateRequest = function(){
+					var parameters = {
+						method	: $scope.request.method,
+						url		: $scope.request.url,
+					};
+
+					parameters.headers = serializeKeyValue($scope.request.headers);
+
 					switch ($scope.request.serialize.bodyTypeIndex){
 						case 0:
-							parameters.formData = _.reduce(_.filter($scope.request.formData,function(v){
-								return v.active && v.key;
-							}), function(acc, item) {
-								acc[item['key']] = item['value'];
-								return acc;
-							}, {});
+							parameters.formData = serializeKeyValue($scope.request.formData);
 						break;
 						case 1:
-							parameters.form = _.reduce(_.filter($scope.request.form,function(v){
-								return v.active && v.key;
-							}), function(acc, item) {
-								acc[item['key']] = item['value'];
-								return acc;
-							}, {});
+							parameters.form = serializeKeyValue($scope.request.form);
 						break;
 						case 2:
 						break;
@@ -132,12 +132,6 @@
 
 					return parameters;
 				}
-
-				$scope.bodySourceEditorOptions= {
-					lineWrapping	: true,
-					lineNumbers		: true,
-					mode			: 'javascript',
-				};
 
 				$scope.sendRequest = function(){
 					$http({
