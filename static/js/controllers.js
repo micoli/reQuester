@@ -35,7 +35,6 @@
 			},
 			templateUrl	:'partials/requester-request-editor.directive.html',
 			controller : function($scope,$http,reQuester,$mdEditDialog){
-				$scope.selectedBodyTypeIndex=0;
 				$scope.response= {};
 
 				$scope.addHeader=function(){
@@ -110,8 +109,35 @@
 						return acc;
 					}, {});
 
+					switch ($scope.request.serialize.bodyTypeIndex){
+						case 0:
+							parameters.formData = _.reduce(_.filter($scope.request.formData,function(v){
+								return v.active && v.key;
+							}), function(acc, item) {
+								acc[item['key']] = item['value'];
+								return acc;
+							}, {});
+						break;
+						case 1:
+							parameters.form = _.reduce(_.filter($scope.request.form,function(v){
+								return v.active && v.key;
+							}), function(acc, item) {
+								acc[item['key']] = item['value'];
+								return acc;
+							}, {});
+						break;
+						case 2:
+						break;
+					}
+
 					return parameters;
 				}
+
+				$scope.bodySourceEditorOptions= {
+					lineWrapping	: true,
+					lineNumbers		: true,
+					mode			: 'javascript',
+				};
 
 				$scope.sendRequest = function(){
 					$http({
@@ -141,13 +167,16 @@
 	})
 	.controller('reQuesterEditorCtrl',function($rootScope,$scope) {
 		$scope.request = {
-			method					: 'GET',
-			url						: 'https://jsonplaceholder.typicode.com/users',
-			headers					: [],
-			formData				: [],
-			form					: [],
-			testsSourceCode			: '',
-			bodySource				: ''
+			method		: 'GET',
+			url			: 'https://jsonplaceholder.typicode.com/users',
+			headers		: [],
+			formData	: [],
+			form		: [],
+			serialize	: {
+				bodyTypeIndex		: 1,
+				testsSourceCode		: '',
+				bodySource			: ''
+			}
 		};
 		$rootScope.request = $scope.request;
 	})

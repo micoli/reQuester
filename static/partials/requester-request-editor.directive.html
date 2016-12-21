@@ -28,7 +28,7 @@
 						Body
 					</md-tab-label>
 					<md-tab-body>
-						<md-tabs md-dynamic-height md-border-bottom md-selected="selectedBodyTypeIndex">
+						<md-tabs md-dynamic-height md-border-bottom md-selected="request.serialize.bodyTypeIndex">
 							<md-tab label="Form">
 								<md-content class="md-padding">
 									<md-toolbar class="md-table-toolbar md-default">
@@ -99,7 +99,7 @@
 							</md-tab>
 							<md-tab label="Plain body">
 								<md-content class="md-padding">
-									<div ui-codemirror ng-model="request.bodySource"></div>
+									<div ui-codemirror ui-codemirror-opts="bodySourceEditorOptions" ng-model="request.serialize.bodySource"></div>
 								</md-content>
 							</md-tab>
 						</md-tabs>
@@ -146,7 +146,7 @@
 					</md-tab-label>
 					<md-tab-body>
 						<md-content class="md-padding">
-							<requester-request-tests-source-code-editor source-code="request.testsSourceCode"></requester-request-tests-source-code-editor>
+							<requester-request-tests-source-code-editor source-code="request.serialize.testsSourceCode"></requester-request-tests-source-code-editor>
 						</md-content>
 					</md-tab-body>
 				</md-tab>
